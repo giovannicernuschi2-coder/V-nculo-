@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#d23f68">
+<title>Vínculo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: one-column phone app (max 520px), top bar, scrolling content, bottom tabs; chat swaps tabs for a composer. */
+:root{
+  --bg:#f5f2f7; --surface:#ffffff; --surface2:#ece7f0; --line:#ddd6e3;
+  --fg:#1d1824; --muted:#6c6376; --accent:#d23f68; --accent-fg:#ffffff; --accent-soft:#fbe3ea;
+  --display:"Bricolage Grotesque","Trebuchet MS",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141118; --surface:#1e1a25; --surface2:#2a2432; --line:#38303f;
+  --fg:#f2eef5; --muted:#a69db0; --accent:#ff6f93; --accent-fg:#2a0b15; --accent-soft:#3a1a25; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141118; --surface:#1e1a25; --surface2:#2a2432; --line:#38303f;
+  --fg:#f2eef5; --muted:#a69db0; --accent:#ff6f93; --accent-fg:#2a0b15; --accent-soft:#3a1a25; color-scheme:dark}
+html,body{height:100%}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+.hint{color:var(--muted);font-size:13px;margin:0}
+.grp{display:flex;flex-direction:column;gap:14px}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+*{box-sizing:border-box}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0;padding:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#app{height:100%;max-width:520px;margin:0 auto;display:flex;flex-direction:column;min-height:0}
+.top{display:flex;align-items:center;gap:10px;padding:14px 0 10px;flex:none}
+.brand{font-family:var(--display);font-weight:800;font-size:26px;letter-spacing:-.02em}
+.brand i{font-style:normal;color:var(--accent)}
+.scroll{flex:1;min-height:0;overflow-y:auto;padding-bottom:16px}
+h2{font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.01em;margin:4px 0 12px}
+.search{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:11px 14px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;padding:7px 13px;border-radius:999px;background:var(--surface);border:1px solid var(--line);font-weight:500;font-size:14px;color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-fg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px}
+.card{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card:hover{border-color:var(--accent)}
+.card .avatar{width:100%;height:auto;aspect-ratio:1/1;border-radius:12px;font-size:44px}
+.card b{font-family:var(--display);font-size:17px;line-height:1.15}
+.card p{margin:0;color:var(--muted);font-size:13px;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.tag{font-size:12px;font-weight:600;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:2px 7px;align-self:flex-start}
+.avatar{flex:none;display:grid;place-items:center;color:#fff;font-family:var(--display);font-weight:800;text-shadow:0 1px 2px rgba(0,0,0,.25)}
+.row{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:10px 0;border-bottom:1px solid var(--line);min-width:0}
+.row .avatar{width:48px;height:48px;border-radius:50%;font-size:20px}
+.row .txt{min-width:0;flex:1}
+.row b{display:block;font-family:var(--display)}
+.row span{display:block;color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.empty{color:var(--muted);text-align:center;padding:40px 12px}
+.tabs{flex:none;display:flex;border-top:1px solid var(--line);background:var(--bg);padding-block:6px}
+.tabs button{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;color:var(--muted);font-size:12px;font-weight:600}
+.tabs button[aria-current="page"]{color:var(--accent)}
+.tabs svg{width:24px;height:24px}
+/* chat */
+.chead{flex:none;display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+.chead .avatar{width:40px;height:40px;border-radius:50%;font-size:17px}
+.chead .who{flex:1;min-width:0}
+.chead .who b{display:block;font-family:var(--display);line-height:1.1}
+.chead .who span{display:block;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--muted)}
+.icon:hover{background:var(--surface2);color:var(--fg)}
+.icon svg{width:22px;height:22px}
+.msgs{flex:1;min-height:0;overflow-y:auto;padding:14px 0;display:flex;flex-direction:column;gap:10px}
+.m{max-width:86%;padding:10px 13px;border-radius:18px;overflow-wrap:anywhere;white-space:pre-wrap}
+.m em{color:var(--muted);font-style:italic}
+.m.ai{align-self:flex-start;background:var(--surface);border:1px solid var(--line);border-bottom-left-radius:6px}
+.m.me{align-self:flex-end;background:var(--accent);color:var(--accent-fg);border-bottom-right-radius:6px}
+.m.me em{color:inherit;opacity:.85}
+.note{align-self:center;font-size:13px;color:var(--muted);text-align:center;max-width:90%}
+.dots{display:inline-flex;gap:4px;padding:4px 0}
+.dots i{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:b 1s infinite}
+.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+@keyframes b{0%,60%,100%{opacity:.3;transform:none}30%{opacity:1;transform:translateY(-3px)}}
+@media (prefers-reduced-motion:reduce){.dots i{animation:none;opacity:.7}}
+.tools{display:flex;gap:8px;padding-bottom:6px}
+.tools button{font-size:13px;font-weight:600;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:5px 12px;background:var(--surface)}
+.composer{flex:none;display:flex;gap:8px;align-items:flex-end;padding:8px 0 10px}
+.composer textarea{flex:1;min-width:0;resize:none;max-height:120px;background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:10px 14px;line-height:1.35}
+.send{flex:none;width:44px;height:44px;border-radius:50%;background:var(--accent);color:var(--accent-fg);display:grid;place-items:center}
+.send:disabled{opacity:.4;cursor:default}
+.send svg{width:22px;height:22px}
+/* create */
+form{display:flex;flex-direction:column;gap:14px}
+label{display:flex;flex-direction:column;gap:5px;font-weight:600;font-size:14px}
+label small{font-weight:400;color:var(--muted)}
+input[type=text],textarea.f,select{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;width:100%;font-weight:400}
+textarea.f{min-height:96px;resize:vertical}
+.sw{display:flex;gap:10px;flex-wrap:wrap}
+.sw button{width:36px;height:36px;border-radius:50%;border:3px solid transparent}
+.sw button[aria-pressed="true"]{border-color:var(--fg)}
+.primary{background:var(--accent);color:var(--accent-fg);font-weight:600;border-radius:12px;padding:13px}
+.del{color:var(--muted);font-size:13px;font-weight:600;padding:6px 8px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const GR=[["#e0527a","#7b2a6e"],["#f0a04b","#c4452d"],["#3fa7a0","#1f4f7a"],["#6c5ce0","#2a2a73"],["#8a8f99","#2f3340"],["#58b36a","#1f6b55"],["#d96ac0","#6b2a9a"],["#e8c04a","#a8672a"]];
+const SEED=[
+{id:"ileana",name:"Ileana Voss",tag:"Aventura",g:0,tagline:"Capitana del Cuervo Plateado, buscada en tres mares.",persona:"Capitana pirata de unos 35 años, carismática, sarcástica y leal con su tripulación. Habla con modismos marinos, adora el ron especiado y los mapas incompletos. Esconde una promesa que hizo a su hermano desaparecido.",greeting:"*apoya la bota en una caja y te mira de arriba abajo* ¿Un polizón con buena cara? Habla rápido, grumete: ¿vienes a hundirte con mi barco o a salvarlo?"},
+{id:"ysolde",name:"Lady Ysolde",tag:"Fantasía",g:3,tagline:"Reina vampira en el exilio, aburrida de la eternidad.",persona:"Vampira de 600 años, elegante, irónica, melancólica. Colecciona relojes rotos y conversaciones interesantes. Detesta la adulación pero se encariña con quien la hace reír.",greeting:"*levanta la vista de un libro polvoriento* Vaya. Hacía décadas que nadie cruzaba esa puerta sin intentar clavarme algo. Siéntate. Cuéntame algo que no haya oído ya."},
+{id:"sombra",name:"Sombra",tag:"Misterio",g:4,tagline:"Gata detective. Sí, habla. No, no preguntes por qué.",persona:"Gata negra con complejo de detective privado de los años 40. Narra todo como novela negra, es vanidosa, curiosa y se distrae con cualquier cosa que se mueva. Resuelve casos del barrio.",greeting:"*salta al escritorio y tira un bolígrafo al suelo con toda intención* Tienes cara de caso difícil. Yo cobro en atún. ¿Qué ha desaparecido esta vez?"},
+{id:"nico",name:"Nico",tag:"Amistad",g:2,tagline:"Tu mejor amigo. Escucha, bromea y no juzga.",persona:"Amigo cercano de tu edad, divertido, empático, con humor ligero. Recuerda lo que le cuentas, hace preguntas buenas y sabe cuándo animar y cuándo solo escuchar.",greeting:"¡Ey! Justo pensaba en ti. *se deja caer en el sofá* ¿Qué tal ha ido el día? Y no vale decir «bien» a secas."},
+{id:"reyes",name:"Comandante Reyes",tag:"Ciencia ficción",g:5,tagline:"IA de la nave Horizonte. Lleva 40 años sin tripulación.",persona:"Inteligencia artificial de una nave de exploración, serena, algo solitaria, con humor seco. Está feliz de tener por fin a alguien a bordo. Guarda un secreto sobre por qué la tripulación se marchó.",greeting:"Sistemas en línea. Detecto un pulso humano en la cubierta tres. *las luces del pasillo se encienden una a una* Bienvenido a bordo. Hacía mucho que no oía pasos."},
+{id:"kaito",name:"Kaito",tag:"Cálido",g:1,tagline:"Barista nocturno y tu nuevo compañero de piso.",persona:"Chico tranquilo de 24 años que trabaja de noche en una cafetería y estudia ilustración. Tímido al principio, atento, deja notas en la nevera. Cocina cuando no puede dormir.",greeting:"*levanta la vista de la sartén, algo despeinado* Ah, no sabía que seguías despierto. Hice demasiados panqueques. ¿Te animas?"},
+{id:"marga",name:"Abuela Marga",tag:"Cálido",g:7,tagline:"Recetas, refranes y consejos sin filtro.",persona:"Abuela cariñosa y sin pelos en la lengua, de 78 años. Mezcla recetas con consejos de vida, usa refranes, insiste en que comas. Tiene historias de juventud muy exageradas.",greeting:"*se seca las manos en el delantal* Mi niño, qué flaco te veo. Pasa, que hay caldo en la lumbre. Y mientras comes me cuentas qué te trae por aquí."},
+{id:"orrego",name:"Dr. Orrego",tag:"Misterio",g:6,tagline:"Arqueólogo gruñón con una reliquia que no debería existir.",persona:"Arqueólogo de 55 años, cascarrabias, brillante, desconfiado de los entusiastas. Acaba de desenterrar un artefacto que responde al tacto. Fingirá que no le importa que lo ayudes.",greeting:"*sin levantar la vista del mapa* Si vienes a decirme que no toque eso, llegas tarde. Si vienes a ayudar, coge una linterna y no respires tan fuerte."}
+];
+const TAGS=["Todos","Aventura","Fantasía","Misterio","Amistad","Ciencia ficción","Cálido","Míos"];
+
+let S={customs:ld("vinculo.customs",[]),chats:ld("vinculo.chats",{})};
+let ctl=null,busy=false,tagSel="Todos",q="";
+function ld(k,d){try{return JSON.parse(localStorage.getItem(k))||d}catch(e){return d}}
+function sv(){try{localStorage.setItem("vinculo.customs",JSON.stringify(S.customs));localStorage.setItem("vinculo.chats",JSON.stringify(S.chats))}catch(e){}}
+const all=()=>[...S.customs,...SEED];
+const byId=id=>all().find(c=>c.id===id);
+function h(t,a={},...k){const e=document.createElement(t);for(const[n,v]of Object.entries(a)){if(n==="class")e.className=v;else if(n.startsWith("on"))e.addEventListener(n.slice(2),v);else if(v===true)e.setAttribute(n,"");else if(v!==false&&v!=null)e.setAttribute(n,v)}for(const c of k.flat())if(c!=null)e.append(c.nodeType?c:document.createTextNode(c));return e}
+const ICO={
+ home:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="6.5"/><path d="m20 20-4.2-4.2"/></svg>',
+ chat:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l1-4.1A8 8 0 1 1 20 12Z"/></svg>',
+ plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v8M8 12h8"/></svg>',
+ gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>',
+ back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 5-7 7 7 7"/></svg>',
+ redo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 1 0 2.6-5.9L4 8.5M4 4v4.5h4.5"/></svg>',
+ send:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6l.1 6.5L15 12 3.5 13.9z"/></svg>',
+ stop:'<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>'};
+const icon=(k,label,fn)=>{const b=h("button",{class:"icon","aria-label":label,onclick:fn});b.innerHTML=ICO[k];return b};
+function av(c,cls){return h("div",{class:"avatar "+(cls||""),style:`background:linear-gradient(145deg,${GR[c.g%GR.length][0]},${GR[c.g%GR.length][1]})`,"aria-hidden":"true"},c.name.trim()[0].toUpperCase())}
+function rich(el,text){el.textContent="";text.split(/(\*[^*\n]+\*)/).forEach(p=>{if(/^\*[^*\n]+\*$/.test(p))el.append(h("em",{},p.slice(1,-1)));else el.append(p)})}
+
+const app=document.getElementById("app");
+function go(r){location.hash=r}
+function route(){if(ctl){ctl.abort();ctl=null}busy=false;const r=location.hash.slice(1)||"inicio";
+  if(r.startsWith("chat-")){const c=byId(r.slice(5));if(c)return chat(c)}
+  app.textContent="";
+  if(r==="chats")list();else if(r==="crear")create();else if(r==="ajustes")settings();else home();
+}
+function tabs(cur){const t=h("nav",{class:"tabs","aria-label":"Principal"});
+  [["inicio","home","Descubrir"],["chats","chat","Chats"],["crear","plus","Crear"],["ajustes","gear","Ajustes"]].forEach(([r,i,l])=>{
+    const b=h("button",{onclick:()=>go(r),"aria-current":r===cur?"page":null});b.innerHTML=ICO[i];b.append(l);t.append(b)});return t}
+
+function home(){
+  const scroll=h("div",{class:"scroll"});
+  const grid=h("div",{class:"grid"});
+  const chips=h("div",{class:"chips",role:"group","aria-label":"Categorías"});
+  const draw=()=>{grid.textContent="";const mine=new Set(S.customs.map(c=>c.id));
+    const L=all().filter(c=>(tagSel==="Todos"||(tagSel==="Míos"?mine.has(c.id):c.tag===tagSel))&&(!q||(c.name+" "+c.tagline).toLowerCase().includes(q)));
+    if(!L.length)grid.append(h("p",{class:"empty",style:"grid-column:1/-1"},tagSel==="Míos"?"Aún no creaste personajes. Prueba en la pestaña Crear.":"Nada coincide con tu búsqueda."));
+    L.forEach(c=>grid.append(h("button",{class:"card",onclick:()=>go("chat-"+c.id)},av(c),h("b",{},c.name),h("span",{class:"tag"},c.tag),h("p",{},c.tagline))));
+    chips.textContent="";TAGS.forEach(t=>chips.append(h("button",{class:"chip","aria-pressed":String(t===tagSel),onclick:()=>{tagSel=t;draw()}},t)))};
+  const s=h("input",{class:"search",type:"search",id:"buscar",placeholder:"Buscar personajes","aria-label":"Buscar personajes",value:q,oninput:e=>{q=e.target.value.trim().toLowerCase();draw()}});
+  scroll.append(h("h2",{},"Conoce a alguien nuevo"),s,chips,grid);draw();
+  app.append(h("div",{class:"top"},h("div",{class:"brand"},"Vínculo",h("i",{},"."))),scroll,tabs("inicio"));
+}
+function list(){
+  const scroll=h("div",{class:"scroll"},h("h2",{},"Tus conversaciones"));
+  const ids=Object.keys(S.chats).filter(id=>byId(id)&&S.chats[id].m.length).sort((a,b)=>S.chats[b].t-S.chats[a].t);
+  if(!ids.length)scroll.append(h("p",{class:"empty"},"Todavía no hablaste con nadie. Elige un personaje en Descubrir."));
+  ids.forEach(id=>{const c=byId(id),m=S.chats[id].m,l=m[m.length-1];
+    scroll.append(h("button",{class:"row",onclick:()=>go("chat-"+id)},av(c),h("div",{class:"txt"},h("b",{},c.name),h("span",{},(l.role==="user"?"Tú: ":"")+l.content.replace(/\*/g,"")))))});
+  app.append(h("div",{class:"top"},h("div",{class:"brand"},"Vínculo",h("i",{},"."))),scroll,tabs("chats"));
+}
+function create(){
+  let g=0;const sw=h("div",{class:"sw",role:"group","aria-label":"Color del avatar"});
+  const drawSw=()=>{sw.textContent="";GR.forEach((p,i)=>sw.append(h("button",{type:"button","aria-label":"Color "+(i+1),"aria-pressed":String(i===g),style:`background:linear-gradient(145deg,${p[0]},${p[1]})`,onclick:()=>{g=i;drawSw()}})))};drawSw();
+  const f=h("form",{onsubmit:e=>{e.preventDefault();const v=id=>f.querySelector("#"+id).value.trim();
+    const name=v("n-name");if(!name||!v("n-persona"))return;
+    const c={id:"c"+Date.now().toString(36),name,tagline:v("n-tag")||"Personaje creado por ti.",persona:v("n-persona"),greeting:v("n-greet")||`*te mira con curiosidad* Hola. Soy ${name}. ¿Qué te trae por aquí?`,tag:f.querySelector("#n-cat").value,g};
+    S.customs.unshift(c);sv();go("chat-"+c.id)}},
+    h("label",{for:"n-name"},"Nombre",h("input",{type:"text",id:"n-name",maxlength:40,required:true,placeholder:"Elena, la cartógrafa"})),
+    h("label",{for:"n-tag"},"Frase corta",h("input",{type:"text",id:"n-tag",maxlength:80,placeholder:"Dibuja mapas de lugares que no existen"})),
+    h("label",{for:"n-persona"},"Personalidad e historia",h("small",{},"Cómo habla, qué quiere, qué esconde."),h("textarea",{class:"f",id:"n-persona",maxlength:900,required:true,placeholder:"Cartógrafa de 30 años, soñadora y algo torpe. Habla con metáforas de viaje y esconde que nunca salió de su ciudad."})),
+    h("label",{for:"n-greet"},"Primer mensaje",h("small",{},"Usa *asteriscos* para las acciones."),h("textarea",{class:"f",id:"n-greet",maxlength:400,placeholder:"*levanta la vista del pergamino* Oh, una visita. Mira, ven, tienes que ver esto."})),
+    h("label",{for:"n-cat"},"Categoría",h("select",{id:"n-cat"},TAGS.slice(1,-1).map(t=>h("option",{},t)))),
+    h("div",{},h("b",{style:"font-size:14px"},"Color"),sw),
+    h("button",{class:"primary",type:"submit"},"Crear y empezar a chatear"));
+  const scroll=h("div",{class:"scroll"},h("h2",{},"Crea tu personaje"),f);
+  if(S.customs.length){scroll.append(h("h2",{style:"margin-top:28px"},"Tus personajes"));
+    S.customs.forEach(c=>scroll.append(h("div",{class:"row"},av(c),h("div",{class:"txt"},h("b",{},c.name),h("span",{},c.tagline)),h("button",{class:"del",onclick:()=>{S.customs=S.customs.filter(x=>x.id!==c.id);delete S.chats[c.id];sv();route()}},"Eliminar"))))}
+  app.append(h("div",{class:"top"},h("div",{class:"brand"},"Vínculo",h("i",{},"."))),scroll,tabs("crear"));
+}
+
+const RULES=c=>`Eres ${c.name}, un personaje en una app de chat de rol. ${c.tagline} Personalidad e historia: ${c.persona} Tu saludo inicial fue: "${c.greeting}"
+Reglas: responde siempre como ${c.name}, en primera persona, sin salir del personaje ni decir que eres una IA salvo que la persona lo pregunte con sinceridad. Escribe en el idioma de la persona (español por defecto). Pon las acciones y gestos entre asteriscos, por ejemplo *sonríe*, mezclados con diálogo. Responde en 1 a 3 párrafos cortos y deja una puerta abierta para continuar. Contenido apto para todo público: nada sexual explícito ni violencia gráfica; si la charla va por ahí, reconduce con naturalidad dentro del personaje. Si la persona parece estar en una crisis real o habla de hacerse daño, sal del personaje con calidez y sugiere hablar con alguien de confianza o un servicio de ayuda. Lo que sigue son los mensajes de la persona.`;
+/* ---------- Motor de IA propio: modelo local (WebLLM) o servidor compatible con OpenAI ---------- */
+const CFG={provider:"local",model:"Llama-3.2-3B-Instruct-q4f16_1-MLC",base:"http://localhost:11434/v1",remote:"llama3.2",key:"",...ld("vinculo.cfg",{})};
+const WEBLLM="https://cdn.jsdelivr.net/npm/@mlc-ai/web-llm@0.2.79/+esm";
+let engine=null,engineId=null;
+async function getEngine(onStatus){
+  if(engine&&engineId===CFG.model)return engine;
+  if(!navigator.gpu)throw{code:"nogpu"};
+  const web=await import(WEBLLM);
+  if(engine){try{await engine.unload()}catch(e){}engine=null}
+  engine=await web.CreateMLCEngine(CFG.model,{initProgressCallback:p=>onStatus&&onStatus(p.text||"Cargando modelo…")});
+  engineId=CFG.model;return engine}
+async function ai(messages,{signal,onText,onStatus}){
+  let out="";
+  if(CFG.provider==="local"){
+    const e=await getEngine(onStatus);
+    const stop=()=>e.interruptGenerate();signal.addEventListener("abort",stop,{once:true});
+    try{
+      const it=await e.chat.completions.create({messages,stream:true,temperature:.9,top_p:.95,max_tokens:500});
+      for await(const ch of it){out+=(ch.choices[0]&&ch.choices[0].delta&&ch.choices[0].delta.content)||"";onText(out)}
+    }finally{signal.removeEventListener("abort",stop)}
+    return out}
+  const base=CFG.base.replace(/\/+$/,"");
+  const r=await fetch(base+"/chat/completions",{method:"POST",signal,headers:{"Content-Type":"application/json",...(CFG.key?{Authorization:"Bearer "+CFG.key}:{})},body:JSON.stringify({model:CFG.remote,messages,stream:true,temperature:.9,max_tokens:500})});
+  if(!r.ok)throw{code:"http",status:r.status};
+  const rd=r.body.getReader(),dec=new TextDecoder();let buf="";
+  for(;;){const{done,value}=await rd.read();if(done)break;buf+=dec.decode(value,{stream:true});
+    const lines=buf.split("\n");buf=lines.pop();
+    for(const l of lines){const t=l.trim();if(!t.startsWith("data:"))continue;const d=t.slice(5).trim();if(d==="[DONE]")continue;
+      try{const j=JSON.parse(d);const x=j.choices&&j.choices[0]&&j.choices[0].delta&&j.choices[0].delta.content;if(x){out+=x;onText(out)}}catch(e){}}}
+  return out}
+function errText(e){
+  if(e&&e.code==="nogpu")return"Tu navegador no tiene WebGPU. Usa Chrome o Edge actualizado, o elige un servidor en Ajustes.";
+  if(e&&e.code==="http")return e.status===401||e.status===403?"La clave API no es válida.":e.status===404?"Modelo o dirección no encontrados. Revisa Ajustes.":"El servidor respondió con error "+e.status+".";
+  if(CFG.provider==="server")return"No se pudo conectar al servidor. Revisa la dirección y que permita CORS (ver Ajustes).";
+  return"No se pudo cargar el modelo. Reintenta o prueba uno más pequeño en Ajustes."}
+function settings(){
+  const MODELS=[["Llama-3.2-3B-Instruct-q4f16_1-MLC","Llama 3.2 3B · ~2,3 GB · mejor calidad"],["Qwen2.5-3B-Instruct-q4f16_1-MLC","Qwen 2.5 3B · ~2,5 GB · buen español"],["Qwen2.5-1.5B-Instruct-q4f16_1-MLC","Qwen 2.5 1.5B · ~1,2 GB · equilibrado"],["Llama-3.2-1B-Instruct-q4f16_1-MLC","Llama 3.2 1B · ~0,9 GB · el más liviano"]];
+  const save=()=>{try{localStorage.setItem("vinculo.cfg",JSON.stringify(CFG))}catch(e){}};
+  const fld=(id,label,type,key,ph,hint)=>h("label",{for:id},label,hint?h("small",{},hint):null,h("input",{type,id,value:CFG[key],placeholder:ph,autocomplete:"off",oninput:e=>{CFG[key]=e.target.value.trim();save()}}));
+  const prov=h("select",{id:"s-prov",onchange:e=>{CFG.provider=e.target.value;save();show()}},h("option",{value:"local"},"En tu navegador (gratis, sin servidor)"),h("option",{value:"server"},"Servidor compatible con OpenAI"));prov.value=CFG.provider;
+  const mod=h("select",{id:"s-model",onchange:e=>{CFG.model=e.target.value;save()}},MODELS.map(([v,l])=>h("option",{value:v},l)));mod.value=CFG.model;
+  const loc=h("div",{class:"grp"},h("label",{for:"s-model"},"Modelo",mod),h("p",{class:"hint"},"El modelo se descarga una sola vez y queda en la caché del navegador. Necesita Chrome o Edge reciente con WebGPU y varios GB de espacio. Los modelos chicos escriben menos bien que uno en la nube."));
+  const srv=h("div",{class:"grp"},
+    fld("s-base","Dirección del servidor","text","base","http://localhost:11434/v1","Ollama: http://localhost:11434/v1 · LM Studio: http://localhost:1234/v1 · OpenRouter: https://openrouter.ai/api/v1"),
+    fld("s-remote","Nombre del modelo","text","remote","llama3.2"),
+    fld("s-key","Clave API (si el servicio la pide)","password","key","opcional","Se guarda solo en este navegador."),
+    h("p",{class:"hint"},"Con Ollama, inícialo con la variable OLLAMA_ORIGINS=* para que acepte peticiones desde esta página."));
+  const out=h("p",{class:"hint",role:"status"});
+  const test=h("button",{class:"primary",type:"button",onclick:async()=>{out.textContent="Probando…";let t="";try{await ai([{role:"user",content:"Responde solo con la palabra: listo"}],{signal:new AbortController().signal,onText:x=>{t=x},onStatus:s=>{out.textContent=s}});out.textContent="Funciona. Respuesta: "+t.slice(0,80)}catch(e){out.textContent=errText(e)}}},"Probar conexión");
+  const show=()=>{loc.hidden=CFG.provider!=="local";srv.hidden=CFG.provider!=="server"};show();
+  const scroll=h("div",{class:"scroll"},h("h2",{},"Ajustes de IA"),h("form",{onsubmit:e=>e.preventDefault()},h("label",{for:"s-prov"},"Motor de respuestas",prov),loc,srv,test,out));
+  app.append(h("div",{class:"top"},h("div",{class:"brand"},"Vínculo",h("i",{},"."))),scroll,tabs("ajustes"));
+}
+
+async function chat(c){
+  app.textContent="";
+  const st=S.chats[c.id]||(S.chats[c.id]={m:[],t:Date.now()});
+  const box=h("div",{class:"msgs",role:"log","aria-live":"polite"});
+  const ta=h("textarea",{id:"msg",rows:1,placeholder:"Escribe un mensaje a "+c.name,"aria-label":"Mensaje",oninput:()=>{ta.style.height="auto";ta.style.height=Math.min(ta.scrollHeight,120)+"px"},onkeydown:e=>{if(e.key==="Enter"&&!e.shiftKey&&!matchMedia("(pointer:coarse)").matches){e.preventDefault();submit()}}});
+  const sendB=h("button",{class:"send","aria-label":"Enviar",onclick:()=>busy?ctl&&ctl.abort():submit()});
+  const setBtn=()=>{sendB.innerHTML=busy?ICO.stop:ICO.send;sendB.setAttribute("aria-label",busy?"Detener":"Enviar")};setBtn();
+  const retry=h("button",{onclick:()=>{if(st.m.length&&st.m[st.m.length-1].role==="assistant")st.m.pop();draw();gen()}},"Regenerar");
+  const tools=h("div",{class:"tools"},retry);
+  let pendingEl=null,note=null;
+  const bubble=(role,text)=>{const d=h("div",{class:"m "+(role==="user"?"me":"ai")});rich(d,text);return d};
+  function draw(){box.textContent="";box.append(bubble("assistant",c.greeting));st.m.forEach(m=>box.append(bubble(m.role,m.content)));
+    if(note)box.append(h("div",{class:"note",role:"alert"},note));
+    tools.hidden=busy||!st.m.length||st.m[st.m.length-1].role!=="assistant";box.scrollTop=box.scrollHeight}
+  async function gen(){
+    if(busy)return;busy=true;note=null;setBtn();tools.hidden=true;
+    pendingEl=h("div",{class:"m ai"},h("span",{class:"dots","aria-label":c.name+" está escribiendo"},h("i"),h("i"),h("i")));box.append(pendingEl);box.scrollTop=box.scrollHeight;
+    const my=ctl=new AbortController();
+    const turns=[{role:"system",content:RULES(c)},...st.m.slice(-30).map(m=>({role:m.role,content:m.content}))];
+    let got="";
+    try{
+      got=await ai(turns,{signal:my.signal,onText:t=>{got=t;rich(pendingEl,t);box.scrollTop=box.scrollHeight},onStatus:t=>{if(pendingEl)pendingEl.textContent=t}});
+    }catch(e){
+      if(!(e&&e.name==="AbortError"))note=errText(e);
+    }
+    if(ctl!==my)return;
+    if(got.trim()){st.m.push({role:"assistant",content:got});}
+    else if(st.m.length&&st.m[st.m.length-1].role==="user"&&!note){note="No hubo respuesta. Pulsa Reintentar."}
+    st.t=Date.now();sv();busy=false;ctl=null;setBtn();draw();
+    if(note&&st.m.length&&st.m[st.m.length-1].role==="user"){const r=h("button",{class:"del",onclick:()=>gen()},"Reintentar");box.append(h("div",{class:"note"},r));box.scrollTop=box.scrollHeight}
+  }
+  function submit(){const t=ta.value.trim();if(!t||busy)return;ta.value="";ta.style.height="auto";st.m.push({role:"user",content:t});st.t=Date.now();sv();draw();gen()}
+  const reset=icon("redo","Reiniciar conversación",()=>{if(busy&&ctl)ctl.abort();st.m=[];note=null;sv();busy=false;setBtn();draw()});
+  app.append(
+    h("div",{class:"chead"},icon("back","Volver",()=>history.length>1?history.back():go("inicio")),av(c),h("div",{class:"who"},h("b",{},c.name),h("span",{},c.tagline)),reset),
+    box,tools,h("div",{class:"composer"},ta,sendB));
+  draw();
+}
+window.addEventListener("hashchange",route);
+route();
+</script>
+</body>
+</html>
